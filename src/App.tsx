@@ -18,6 +18,7 @@ import BankAccounts from './pages/BankAccounts';
 import './App.css';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import FeedBackPage from './pages/FeedBackPage';
+import AddressPage from './components/Addresses/AddressPage';
 
 function App() {
   return (
@@ -39,7 +40,8 @@ function App() {
               <Route path="/support" element={<Support />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/feedback" element={<FeedBackPage />} />
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
+              //<Route path="/address" element={<AddressPage />} />
+              <Route path="/" element={<Navigate to="dashboard" replace />} />
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Routes>
           </Layout>

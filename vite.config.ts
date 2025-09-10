@@ -8,13 +8,5 @@ export default defineConfig({
   server: {
     port: 5174,
     host: "0.0.0.0",
-    allowedHosts: [
-      "7fb2edda-ecde-4166-9d13-6f6f65a7619b-00-gbuhuwezmbi6.sisko.replit.dev",
-    ],
-    cors: {
-      origin:
-        "https://f4e5bc99-2c13-4f67-9672-f6a5529308c2-00-su454hi1fehf.pike.replit.dev",
-      credentials: true,
-    },
   },
 });

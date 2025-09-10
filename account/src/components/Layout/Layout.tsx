@@ -12,37 +12,62 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { isSidebarCollapsed, isDarkMode, isMobileSidebarOpen, toggleMobileSidebar } = useTheme();
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <Navbar toggleMobileSidebar={toggleMobileSidebar} />
-
-      {/* Desktop Layout */}
-      <div className="flex pt-14 sm:pt-16">
-        {/* Sidebar - Hidden on mobile, visible on desktop */}
-        <div className="hidden lg:block lg:w-64 lg:fixed lg:inset-y-0 lg:pt-16 lg:z-20">
-          <Sidebar />
-        </div>
-
-        {/* Main Content - Full width on mobile, adjusted on desktop */}
-        <main className="flex-1 lg:pl-64 transition-all duration-300 ease-in-out">
-          <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6">
-            {children}
-          </div>
-        </main>
+    <div className={`min-h-screen ${
+      isDarkMode
+        ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900'
+        : 'bg-gradient-to-br from-gray-50 via-white to-gray-100'
+    }`}>
+      {/* Background Pattern */}
+      <div className="fixed inset-0 opacity-30">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.5)_1px,transparent_0)] dark:bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.1)_1px,transparent_0)] bg-[length:20px_20px]"></div>
       </div>
 
-      {/* Mobile Sidebar Overlay */}
-      {isMobileSidebarOpen && (
-        <div className="lg:hidden fixed inset-0 z-40 overflow-hidden">
-          <div 
-            className="fixed inset-0 bg-gray-600 bg-opacity-75 backdrop-blur-sm transition-opacity" 
-            onClick={toggleMobileSidebar}
-            aria-hidden="true"
-          />
-          <div className="fixed inset-y-0 left-0 max-w-xs w-full bg-white dark:bg-gray-800 shadow-xl z-50 transition-transform duration-300 ease-in-out">
+      {/* Fixed Navbar at the top */}
+      <div className="fixed top-0 w-full z-50">
+        <Navbar />
+      </div>
+
+      {/* Desktop Layout */}
+      <div className="hidden lg:block">
+        <div className="container-table mx-auto mt-16 mb-8 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 shadow-lg">
+          {/* Sidebar Column */}
+          <div className="border-r z-0 border-gray-200 dark:border-gray-800">
             <Sidebar />
           </div>
+
+          {/* Main Content Column */}
+          <div className="flex-1 relative z-10 flex flex-col">
+            {/* Page Content */}
+            <main className="flex-1 p-6 overflow-auto">
+              <div className="w-full">
+                {children}
+              </div>
+            </main>
+          </div>
         </div>
-      )}
+      </div>
+
+      {/* Mobile Layout */}
+      <div className="lg:hidden">
+        {/* Mobile Sidebar Overlay */}
+        {isMobileSidebarOpen && (
+          <div className="fixed inset-0 z-50">
+            <div className="fixed inset-0 bg-black bg-opacity-50" onClick={toggleMobileSidebar}></div>
+            <div className="fixed top-0 left-0 w-80 h-full z-60">
+              <Sidebar />
+            </div>
+          </div>
+        )}
+
+        {/* Mobile Main Content */}
+        <div className="pt-16 min-h-screen bg-white dark:bg-gray-900">
+          <main className="p-4">
+            <div className="w-full">
+              {children}
+            </div>
+          </main>
+        </div>
+      </div>
     </div>
   );
 };

@@ -1,7 +1,7 @@
 
 const API_BASE_URL = 'https://backend.glst.in/api/account/refund-payment';
 
-// Helper function to get auth headers
+//auth headers lelo
 const getAuthHeaders = () => {
   const token = localStorage.getItem('token') || localStorage.getItem('authToken');
   return {
@@ -10,7 +10,7 @@ const getAuthHeaders = () => {
   };
 };
 
-// Helper function to handle API responses
+ 
 const handleApiResponse = async (response: Response) => {
   if (!response.ok) {
     let errorMessage = `HTTP error! status: ${response.status}`;

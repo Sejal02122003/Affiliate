@@ -35,16 +35,15 @@ const Navbar: React.FC = () => {
   ];
 
   return (
-    <nav className="fixed top-0 w-full z-50 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-0 shadow-md">
-      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6">
+    <nav className="fixed top-0 w-full z-[0] border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-0 shadow-md">
+      <div className="container mx-auto px-2 sm:px-4" style={{ maxWidth: '1300px' }}>
         <div className="flex items-center justify-between h-14 sm:h-16">
           {/* Left Section */}
-          <div className="flex items-center space-x-2 sm:space-x-4">
+          <div className="flex items-center space-x-4">
             {/* Mobile Menu Button */}
             <button
               onClick={toggleMobileSidebar}
-              className="lg:hidden p-2 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-700"
-              aria-label="Open menu"
+              className="lg:hidden p-2 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
             >
               <Bars3Icon className="w-5 h-5 sm:w-6 sm:h-6" />
             </button>

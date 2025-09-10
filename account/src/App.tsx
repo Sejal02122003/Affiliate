@@ -53,7 +53,7 @@ function App() {
             <Route path="/overview" element={<AccountPage />} />
             
             {/* Profile Management */}
-            <Route path="/profile/*" element={<ProfilePage userRole="customer" />}>
+            <Route path="/profile/*" element={<ProfilePage />}>
               <Route path="basic" element={<BasicInformation />} />
               <Route path="contact" element={<ContactDetails />} />
               <Route path="picture" element={<ProfilePicture />} />
