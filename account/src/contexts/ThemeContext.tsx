@@ -15,6 +15,7 @@ interface ThemeContextType {
   theme: Theme;
   isDarkMode: boolean;
   toggleTheme: () => void;
+  cycleThemeMode: () => void;
   setTheme: (theme: Theme) => void;
   colorScheme: ColorScheme;
   setColorScheme: (scheme: ColorScheme) => void;
@@ -198,6 +199,26 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     setThemeState(newTheme);
   }, [theme, followSystemTheme]);
 
+  // Cycle through modes: light -> dark -> auto (follow system)
+  const cycleThemeMode = useCallback(() => {
+    if (followSystemTheme) {
+      // Auto -> Light
+      setFollowSystemThemeState(false);
+      setThemeState('light');
+      return;
+    }
+
+    if (theme === 'light') {
+      // Light -> Dark
+      setThemeState('dark');
+      return;
+    }
+
+    // Dark -> Auto
+    setFollowSystemThemeState(true);
+    setThemeState(systemPreference);
+  }, [theme, followSystemTheme, systemPreference]);
+
   const setTheme = useCallback((newTheme: Theme) => {
     if (followSystemTheme) {
       setFollowSystemThemeState(false);
@@ -236,6 +257,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     theme,
     isDarkMode,
     toggleTheme,
+    cycleThemeMode,
     setTheme,
     colorScheme,
     setColorScheme,

@@ -2,6 +2,7 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { ToastProvider } from './components/ToastProvider';
 import Layout from './components/Layout/Layout';
 import AccountPage from './components/AccountPage';
 
@@ -44,7 +45,8 @@ import './App.css';
 function App() {
   return (
     <ThemeProvider>
-      <Layout>
+      <ToastProvider>
+        <Layout>
         <Routes>
             {/* Default Route */}
             <Route path="/" element={<Navigate to="/overview" replace />} />
@@ -53,13 +55,12 @@ function App() {
             <Route path="/overview" element={<AccountPage />} />
             
             {/* Profile Management */}
-            <Route path="/profile/*" element={<ProfilePage />}>
-              <Route path="basic" element={<BasicInformation />} />
-              <Route path="contact" element={<ContactDetails />} />
-              <Route path="picture" element={<ProfilePicture />} />
-              <Route path="bio" element={<BioPreferences />} />
-              <Route index element={<Navigate to="basic" replace />} />
-            </Route>
+            <Route path="/profile" element={<ProfilePage initialSection="basic" />} />
+            <Route path="/profile/basic" element={<ProfilePage initialSection="basic" />} />
+            <Route path="/profile/contact" element={<ProfilePage initialSection="contact" />} />
+            <Route path="/profile/picture" element={<ProfilePage initialSection="picture" />} />
+            <Route path="/profile/bio" element={<ProfilePage initialSection="bio" />} />
+            <Route path="/profile/analytics" element={<ProfilePage initialSection="analytics" />} />
             
             {/* Orders & Purchases */}
             <Route path="/orders" element={<OrdersPage />} />
@@ -133,6 +134,7 @@ function App() {
             <Route path="/support/report" element={<SupportPage />} />
           </Routes>
         </Layout>
+      </ToastProvider>
     </ThemeProvider>
   );
 }

@@ -1,6 +1,7 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useTheme, useColorScheme } from '../../contexts/ThemeContext';
+import { showToast } from '../../utils/toast';
 import { useNavigate ,useLocation} from 'react-router-dom';
 import { 
   SunIcon, 
@@ -20,16 +21,22 @@ const Navbar: React.FC = () => {
   const { 
     isDarkMode, 
     toggleTheme, 
+    cycleThemeMode,
     toggleMobileSidebar, 
     colorScheme, 
     setColorScheme,
     followSystemTheme,
-    setFollowSystemTheme
+    setFollowSystemTheme,
+    theme,
+    setTheme
   } = useTheme();
   const { getColorClasses } = useColorScheme();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showThemeMenu, setShowThemeMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement | null>(null);
+  const themeMenuRef = useRef<HTMLDivElement | null>(null);
+  const notificationsRef = useRef<HTMLDivElement | null>(null);
 
   const colorOptions = [
     { name: 'Orange', value: 'orange' as const, color: 'bg-orange-primary' },
@@ -40,6 +47,25 @@ const Navbar: React.FC = () => {
     { id: 2, title: 'Payment processed', message: 'Your earnings have been transferred', time: '1 hour ago', unread: true },
     { id: 3, title: 'Welcome bonus', message: 'Complete your profile for ₹10 bonus', time: '2 hours ago', unread: false },
   ];
+
+  // Close all dropdowns when clicking outside
+  useEffect(() => {
+    function handleOutsideClick(e: MouseEvent) {
+      const target = e.target as Node;
+      if (userMenuRef.current && !userMenuRef.current.contains(target)) {
+        setShowUserMenu(false);
+      }
+      if (themeMenuRef.current && !themeMenuRef.current.contains(target)) {
+        setShowThemeMenu(false);
+      }
+      if (notificationsRef.current && !notificationsRef.current.contains(target)) {
+        setShowNotifications(false);
+      }
+    }
+
+    document.addEventListener('click', handleOutsideClick);
+    return () => document.removeEventListener('click', handleOutsideClick);
+  }, []);
 
   return (
     <nav className="fixed top-0 w-full z-[0] border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-0 shadow-md">
@@ -59,99 +85,38 @@ const Navbar: React.FC = () => {
             <div className="flex items-center">
               
               <div className="hidden sm:block">
-                <h1 className="text-lg sm:text-xl font-bold text-orange-600 dark:text-white">
+                <h1 className="text-lg sm:text-xl font-bold text-orange-600 dark:text-white select-none">
                   Bonzicart
                 </h1>
-               
               </div>
             </div>
           </div>
 
           {/* Right Section */}
           <div className="flex items-center space-x-1 sm:space-x-3">
-            {/* Theme Controls */}
-            <div className="relative">
+            {/* Small theme toggle button next to user menu */}
+            <div className="hidden sm:block" ref={themeMenuRef}>
               <button
-                onClick={() => setShowThemeMenu(!showThemeMenu)}
+                onClick={() => {
+                  const nextMode = isDarkMode ? 'Light' : 'Dark';
+                  // toggleTheme will disable follow-system and flip theme
+                  toggleTheme();
+                  showToast.success(`Appearance: ${nextMode}`);
+                }}
+                title="Toggle theme"
+                aria-label="Toggle theme"
                 className="p-2 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
               >
                 {isDarkMode ? (
-                  <MoonIcon className="w-4 h-4 sm:w-5 sm:h-5" />
-                ) : (
                   <SunIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                ) : (
+                  <MoonIcon className="w-4 h-4 sm:w-5 sm:h-5" />
                 )}
               </button>
-
-              {/* Theme Menu */}
-              {showThemeMenu && (
-                <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-2xl shadow-elevation-3 border border-gray-200 dark:border-gray-700 py-3">
-                  <div className="px-4 pb-3 border-b border-gray-200 dark:border-gray-700">
-                    <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
-                      Appearance Settings
-                    </h3>
-                  </div>
-                  
-                  {/* Theme Toggle */}
-                  <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-700 dark:text-gray-300">Dark Mode</span>
-                      <div className="flex items-center space-x-2">
-                        <button
-                          onClick={() => setFollowSystemTheme(!followSystemTheme)}
-                          className={`text-xs px-2 py-1 rounded-lg ${
-                            followSystemTheme 
-                              ? 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200' 
-                              : 'text-gray-500 dark:text-gray-400'
-                          }`}
-                        >
-                          Auto
-                        </button>
-                        <button
-                          onClick={toggleTheme}
-                          className={`relative w-11 h-6 rounded-full ${
-                            isDarkMode 
-                              ? getColorClasses('primary')
-                              : 'bg-gray-300'
-                          }`}
-                        >
-                          <div className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full ${
-                            isDarkMode ? 'translate-x-5' : 'translate-x-0'
-                          }`} />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Color Scheme */}
-                  {/* <div className="px-4 py-3">
-                    <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-3">
-                      Color Scheme
-                    </h4>
-                    <div className="grid grid-cols-4 gap-2">
-                      {colorOptions.map((option) => (
-                        <button
-                          key={option.value}
-                          onClick={() => setColorScheme(option.value)}
-                          className={`p-3 rounded-xl border-2 ${
-                            colorScheme === option.value
-                              ? 'border-gray-400 dark:border-gray-500 bg-gray-50 dark:bg-gray-700'
-                              : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
-                          }`}
-                        >
-                          <div className={`w-6 h-6 rounded-full ${option.color} mx-auto mb-1`} />
-                          <span className="text-xs text-gray-600 dark:text-gray-400">
-                            {option.name}
-                          </span>
-                        </button>
-                      ))}
-                    </div>
-                  </div> */}
-                </div>
-              )}
             </div>
 
             {/* Notifications */}
-            <div className="relative hidden">
+            <div className="relative hidden" ref={notificationsRef}>
               <button
                 onClick={() => setShowNotifications(!showNotifications)}
                 className="relative p-2 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -215,7 +180,7 @@ const Navbar: React.FC = () => {
             </div>
 
             {/* User Menu */}
-            <div className="relative">
+            <div className="relative" ref={userMenuRef}>
               <button
                 onClick={() => setShowUserMenu(!showUserMenu)}
                 className="flex items-center space-x-2 p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -271,7 +236,6 @@ const Navbar: React.FC = () => {
                 </div>
               )}
             </div>
-
           </div>
         </div>
       </div>

@@ -2,6 +2,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { store } from './store/store';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { ToastProvider } from './components/ToastProvider';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/Layout/Layout';
 import Dashboard from './pages/Dashboard';
@@ -24,28 +25,30 @@ function App() {
   return (
     <Provider store={store}>
       <ThemeProvider>
-        <div className="App">
-          <Layout>
-            <Routes>
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/analytics" element={<Analytics />} />
-              <Route path="/referrals" element={<Referrals />} />
-              <Route path="/affiliate-links/*" element={<AffiliateLinks />} />
-              <Route path="/earnings" element={<Earnings />} />
-              <Route path="/payouts" element={<Payouts />} />
-              <Route path="/marketing-tools" element={<MarketingTools />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/bank-accounts" element={<BankAccounts />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/support" element={<Support />} />
-              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-              <Route path="/feedback" element={<FeedBackPage />} />
-              //<Route path="/address" element={<AddressPage />} />
-              <Route path="/" element={<Navigate to="dashboard" replace />} />
-              <Route path="*" element={<Navigate to="/dashboard" replace />} />
-            </Routes>
-          </Layout>
-        </div>
+        <ToastProvider>
+          <div className="App">
+            <Layout>
+              <Routes>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/analytics" element={<Analytics />} />
+                <Route path="/referrals" element={<Referrals />} />
+                <Route path="/affiliate-links/*" element={<AffiliateLinks />} />
+                <Route path="/earnings" element={<Earnings />} />
+                <Route path="/payouts" element={<Payouts />} />
+                <Route path="/marketing-tools" element={<MarketingTools />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/bank-accounts" element={<BankAccounts />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/support" element={<Support />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/feedback" element={<FeedBackPage />} />
+                //<Route path="/address" element={<AddressPage />} />
+                <Route path="/" element={<Navigate to="dashboard" replace />} />
+                <Route path="*" element={<Navigate to="/dashboard" replace />} />
+              </Routes>
+            </Layout>
+          </div>
+        </ToastProvider>
       </ThemeProvider>
     </Provider>
   );

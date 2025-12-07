@@ -1,8 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
+import { showToast } from '../utils/toast';
 import {
   fetchUserProfile,
   updatePersonalInfo,
@@ -15,7 +14,6 @@ import {
 
 const Profile: React.FC = () => {
   const dispatch = useAppDispatch();
-  const MySwal = withReactContent(Swal);
   const { 
     profileData, 
     loading, 
@@ -155,22 +153,12 @@ const Profile: React.FC = () => {
         alt_phone_number: personalForm.alt_phone_number,
       };
       await dispatch(updatePersonalInfo(updateData)).unwrap();
-      // Show success message with SweetAlert
-      MySwal.fire({
-        title: 'Success!',
-        text: 'Personal information updated successfully!',
-        icon: 'success',
-        confirmButtonColor: '#f97316' // orange-primary
-      });
+      showToast.success('Personal information updated successfully!');
     } catch (error) {
       console.error('Failed to update personal info:', error);
-      // Show error message with SweetAlert
-      MySwal.fire({
-        title: 'Error!',
-        text: error instanceof Error ? error.message : 'Failed to update personal information. Please try again.',
-        icon: 'error',
-        confirmButtonColor: '#f97316' // orange-primary
-      });
+      showToast.error(
+        error instanceof Error ? error.message : 'Failed to update personal information. Please try again.'
+      );
     }
   };
 
@@ -178,22 +166,12 @@ const Profile: React.FC = () => {
     e.preventDefault();
     try {
       await dispatch(updateBusinessDetails(businessForm)).unwrap();
-      // Show success message with SweetAlert
-      MySwal.fire({
-        title: 'Success!',
-        text: 'Business details updated successfully!',
-        icon: 'success',
-        confirmButtonColor: '#f97316' // orange-primary
-      });
+      showToast.success('Business details updated successfully!');
     } catch (error) {
       console.error('Failed to update business details:', error);
-      // Show error message with SweetAlert
-      MySwal.fire({
-        title: 'Error!',
-        text: error instanceof Error ? error.message : 'Failed to update business details. Please try again.',
-        icon: 'error',
-        confirmButtonColor: '#f97316' // orange-primary
-      });
+      showToast.error(
+        error instanceof Error ? error.message : 'Failed to update business details. Please try again.'
+      );
     }
   };
 
@@ -201,22 +179,12 @@ const Profile: React.FC = () => {
     e.preventDefault();
     try {
       await dispatch(updatePreferences(preferencesForm)).unwrap();
-      // Show success message with SweetAlert
-      MySwal.fire({
-        title: 'Success!',
-        text: 'Preferences updated successfully!',
-        icon: 'success',
-        confirmButtonColor: '#f97316' // orange-primary
-      });
+      showToast.success('Preferences updated successfully!');
     } catch (error) {
       console.error('Failed to update preferences:', error);
-      // Show error message with SweetAlert
-      MySwal.fire({
-        title: 'Error!',
-        text: error instanceof Error ? error.message : 'Failed to update preferences. Please try again.',
-        icon: 'error',
-        confirmButtonColor: '#f97316' // orange-primary
-      });
+      showToast.error(
+        error instanceof Error ? error.message : 'Failed to update preferences. Please try again.'
+      );
     }
   };
 
@@ -224,22 +192,18 @@ const Profile: React.FC = () => {
     e.preventDefault();
     
     if (passwordForm.new_password !== passwordForm.new_password_confirmation) {
-      return; // Error will be shown in validation
+      showToast.error('Passwords do not match');
+      return;
     }
     
     if (passwordForm.new_password.length < 8) {
-      return; // Error will be shown in validation
+      showToast.error('Password must be at least 8 characters long');
+      return;
     }
     
     try {
       await dispatch(changePassword(passwordForm)).unwrap();
-      // Show success message with SweetAlert
-      MySwal.fire({
-        title: 'Success!',
-        text: 'Your password has been updated successfully.',
-        icon: 'success',
-        confirmButtonColor: '#f97316' // orange-primary
-      });
+      showToast.success('Your password has been updated successfully.');
       setPasswordForm({
         current_password: '',
         new_password: '',
@@ -247,13 +211,9 @@ const Profile: React.FC = () => {
       });
     } catch (error) {
       console.error('Failed to change password:', error);
-      // Show error message with SweetAlert
-      MySwal.fire({
-        title: 'Error!',
-        text: error instanceof Error ? error.message : 'Failed to change password. Please try again.',
-        icon: 'error',
-        confirmButtonColor: '#f97316' // orange-primary
-      });
+      showToast.error(
+        error instanceof Error ? error.message : 'Failed to change password. Please try again.'
+      );
     }
   };
 
@@ -262,23 +222,13 @@ const Profile: React.FC = () => {
     if (file) {
       // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        MySwal.fire({
-          title: 'Error!',
-          text: 'Image file size must be less than 5MB',
-          icon: 'error',
-          confirmButtonColor: '#f97316' // orange-primary
-        });
+        showToast.error('Image file size must be less than 5MB');
         return;
       }
 
       // Validate file type
       if (!file.type.startsWith('image/')) {
-        MySwal.fire({
-          title: 'Error!',
-          text: 'Please select a valid image file',
-          icon: 'error',
-          confirmButtonColor: '#f97316' // orange-primary
-        });
+        showToast.error('Please select a valid image file');
         return;
       }
 
@@ -287,20 +237,12 @@ const Profile: React.FC = () => {
         const base64String = reader.result as string;
         try {
           await dispatch(updateProfileImage({ profile_image: base64String })).unwrap();
-          MySwal.fire({
-            title: 'Success!',
-            text: 'Profile image updated successfully!',
-            icon: 'success',
-            confirmButtonColor: '#f97316' // orange-primary
-          });
+          showToast.success('Profile image updated successfully!');
         } catch (error) {
           console.error('Failed to update profile image:', error);
-          MySwal.fire({
-            title: 'Error!',
-            text: error instanceof Error ? error.message : 'Failed to update profile image. Please try again.',
-            icon: 'error',
-            confirmButtonColor: '#f97316' // orange-primary
-          });
+          showToast.error(
+            error instanceof Error ? error.message : 'Failed to update profile image. Please try again.'
+          );
         }
       };
       reader.readAsDataURL(file);

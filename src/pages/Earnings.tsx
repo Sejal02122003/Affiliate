@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import EarningsChart from '../components/Charts/EarningsChart';
 import ConversionChart from '../components/Charts/ConversionChart';
+import { showToast } from '../utils/toast';
 
 const Earnings: React.FC = () => {
   const [timeframe, setTimeframe] = useState('30days');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
 
   const earningsStats = [
     { label: 'Total Earnings', value: '₹12,534.56', change: '+12.5%', icon: '💰' },
@@ -26,6 +29,39 @@ const Earnings: React.FC = () => {
     { value: '90days', label: '90 Days' },
     { value: '1year', label: '1 Year' },
   ];
+
+  // Pagination logic
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedEarnings = recentEarnings.slice(startIndex, endIndex);
+  const totalPages = Math.ceil(recentEarnings.length / itemsPerPage);
+
+  // CSV Export function
+  const handleExportCSV = () => {
+    try {
+      const csvContent = [
+        ['Date', 'Product', 'Commission', 'Rate'],
+        ...recentEarnings.map(e => [e.date, e.product, e.commission, e.rate])
+      ].map(row => row.join(',')).join('\n');
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+
+      link.setAttribute('href', url);
+      link.setAttribute('download', `earnings_${new Date().toISOString().slice(0, 10)}.csv`);
+      link.style.visibility = 'hidden';
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      showToast.success('Earnings exported as CSV!');
+    } catch (error) {
+      console.error('CSV export failed:', error);
+      showToast.error('Failed to export CSV. Please try again.');
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -91,9 +127,17 @@ const Earnings: React.FC = () => {
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Recent Earnings</h3>
               <p className="text-gray-600 dark:text-gray-400 mt-1">Your latest commission transactions</p>
             </div>
-            <button className="px-4 py-2 text-sm bg-orange-600 text-white rounded-lg hover:bg-orange-700">
-              View All
-            </button>
+            <div className="flex gap-2">
+              <button 
+                onClick={handleExportCSV}
+                className="px-4 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700"
+              >
+                📥 Export CSV
+              </button>
+              <button className="px-4 py-2 text-sm bg-orange-600 text-white rounded-lg hover:bg-orange-700">
+                View All
+              </button>
+            </div>
           </div>
         </div>
         <div className="overflow-x-auto">
@@ -108,7 +152,7 @@ const Earnings: React.FC = () => {
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              {recentEarnings.map((earning) => (
+              {paginatedEarnings.map((earning) => (
                 <tr key={earning.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                     {earning.date}
@@ -127,6 +171,43 @@ const Earnings: React.FC = () => {
               ))}
             </tbody>
           </table>
+        </div>
+        {/* Pagination */}
+        <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
+          <div className="text-sm text-gray-600 dark:text-gray-400">
+            Showing {startIndex + 1} to {Math.min(endIndex, recentEarnings.length)} of {recentEarnings.length}
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Previous
+            </button>
+            <div className="flex items-center gap-1">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className={`px-3 py-2 text-sm rounded-lg ${
+                    currentPage === page
+                      ? 'bg-orange-600 text-white'
+                      : 'border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  {page}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Next
+            </button>
+          </div>
         </div>
       </div>
 

@@ -7,12 +7,12 @@ import BioPreferences from './BioPreferences';
 import ProfileAnalytics from './Analytics';
 
 interface ProfilePageProps {
-  userRole: 'customer' | 'affiliate' | 'admin';
+  userRole?: 'customer' | 'affiliate' | 'admin';
   initialSection?: string;
   onBack?: () => void;
 }
 
-const ProfilePage: React.FC<ProfilePageProps> = ({ userRole, initialSection = 'basic', onBack }) => {
+const ProfilePage: React.FC<ProfilePageProps> = ({ userRole = 'customer', initialSection = 'basic', onBack }) => {
   const { isDarkMode, colorScheme } = useTheme();
   const [activeSection, setActiveSection] = useState(initialSection);
 
